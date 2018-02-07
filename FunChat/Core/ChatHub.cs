@@ -24,33 +24,39 @@ namespace ChatApp.Core
         {
             var user = new User { ConnectionId = Context.ConnectionId, Name = Request.UserName, OnlineStatus = OnlineStatus.Online };
             var passCode = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4).ToUpper();
-            foreach (var item in Request.Rooms)
-            {
+            //foreach (var item in Request.Rooms)
+            //{
                 bool isPresent = false;
 
-                if (_rooms.ContainsKey(item)) //Room is there -so add user in group
+                if (_rooms.ContainsKey(Request.Room)) //Room is there -so add user in group
                 {
-                    var users = _rooms[item].Users;
+                    var users = _rooms[Request.Room].Users;
                     if (users.Where(f => f.ConnectionId == Request.ConnectionId).Count() == 0) //check for refresh needed
                         
                         //Check passcode here
-                        users.Add(user);
+                        if(Request.PassCode == _rooms[Request.Room].PassCode)
+                            users.Add(user);
+                        else
+                        {
+                            //invalid passcode to join room
+
+                        }
                     else
                     {
                         isPresent = true;
                         await Clients.Client(Request.ConnectionId).InvokeAsync("notifyUser", new EventNotifier
                         {
-                            Message = "You are already connected in "+ item +" group !",
+                            Message = "You are already connected in "+ Request.Room + " group !",
                             ActionType = "AlreadyConnected"
                         });
                     }
                 }
                 else //Room not there - create room and add current user
                 {
-                    _rooms.TryAdd(item, new Room
+                    _rooms.TryAdd(Request.Room, new Room
                     {
-                        RoomName = item,
-                        Passcode = passCode,
+                        RoomName = Request.Room,
+                        PassCode = passCode,
                         Users = new List<User> { user }
                     });
                 }
@@ -58,18 +64,18 @@ namespace ChatApp.Core
                 //Group Not present : Send notification only to first Connected User
                 if(!isPresent)
                 {
-                    await Groups.AddAsync(Context.ConnectionId, item);
-                    await Clients.Group(item).InvokeAsync("userEvent",
-                        new EventNotifier
+                    await Groups.AddAsync(Context.ConnectionId, Request.Room);
+                    await Clients.Group(Request.Room).InvokeAsync("userEvent", new EventNotifier
                         {
                             CurrentUser = user,
                             Message = ": join in chat!",
                             ActionType = "Connect",
-                            Passcode = passCode,
-                            Users = _rooms[item].Users
+                            PassCode = _rooms[Request.Room].PassCode,
+                            RoomName = Request.Room,
+                            Users = _rooms[Request.Room].Users
                         });
                 }
-            }
+            //}
         }
 
         public async Task DisconnectMe(DisconnectRequest Request)

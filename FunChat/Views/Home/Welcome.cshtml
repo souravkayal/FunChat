@@ -10,7 +10,6 @@
 <body>
 
     <br /><br /><br /><br />
-
     <div class="container">
         <div class="row">
             <div class="col-lg-2"></div>
@@ -18,36 +17,41 @@
                 <section>
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="nav-item">
-                            <a href="#step1" class="nav-link active" data-toggle="tab" aria-controls="step1" role="tab" title="Step 1">
+                            <a href="#step1" class="nav-link active" data-toggle="tab" aria-controls="step1" role="tab" title="Step 1" id="step1_header">
                                 Personal Room
                             </a>
                         </li>
                         <li role="presentation" class="nav-item">
-                            <a href="#step2" class="nav-link" data-toggle="tab" aria-controls="step2" role="tab" title="Step 2">
+                            <a href="#step2" class="nav-link" data-toggle="tab" aria-controls="step2" role="tab" title="Step 2" id="step2_header">
                                 Join in Room
                             </a>
                         </li>
                     </ul>
-                    <form role="form" method="post" action="Home/Room">
+                    
                         <div class="tab-content">
                             <div class="tab-pane active" role="tabpanel" id="step1">
-                                  <h3>It's your personal Chat Room</h3>
-                                  <div class="row">
-                                      <div class="col-lg-6"> <input type="text" class="form-control" name="UserName" placeholder="What is your Nickname ?" value="a" /> </div>
-                                      <div class="col-lg-5"> <input type="text" class="form-control" name="RoomName" placeholder="Choose room name"  value="b" /> </div>
-                                      <div class="col-lg-1"><input type="submit" class="btn btn-warning" value="Join me!">  </div>
-                                  </div>
+                                <form role="form" method="post" action="Home/Room">
+                                    <h3>It's your personal Chat Room</h3>
+                                    <div class="row">
+                                        <div class="col-lg-6"> <input type="text" class="form-control" name="UserName" placeholder="What is your Nickname ?" /> </div>
+                                        <div class="col-lg-5"> <input type="text" class="form-control" name="RoomName" placeholder="Choose room name" /> </div>
+                                        <div class="col-lg-1"><input type="submit" class="btn btn-warning" value="Join me!">  </div>
+                                    </div>
+                                </form>
                             </div>
                             <div class="tab-pane" role="tabpanel" id="step2">
-                                <h3>Search Room to join</h3>
-                                <div class="row">
-                                    <div class="col-lg-6"> <input type="text" class="form-control" name="UserName" placeholder="Find Room !" value="a" /> </div>
-                                    <div class="col-lg-5"> <input type="text" class="form-control" name="RoomName" placeholder="Passcode" value="b" /> </div>
-                                    <div class="col-lg-1"><input type="submit" class="btn btn-success" value="Join me!">  </div>
-                                </div>
-                            </div>
+                                <form role="form" method="post" action="Home/Room">
+                                    <h3>Search Room to join</h3>
+                                    <div class="row">
+                                        <div class="col-lg-4"> <input type="text" class="form-control" name="UserName" placeholder="What is your Nickname ?" /> </div>
+                                        <div class="col-lg-4"> <input type="text" class="form-control" name="RoomName" placeholder="Find Room !" /> </div>
+                                        <div class="col-lg-3"> <input type="text" class="form-control" name="PassCode" placeholder="Passcode" /> </div>
+                                        <div class="col-lg-1"><input type="submit" class="btn btn-success" value="Join me!">  </div>
+                                    </div>
+                                </form>
+                             </div>
                         </div>
-                    </form>
+                    
                 </section>
             </div>
             <div class="col-lg-2"></div>

@@ -12,19 +12,26 @@ export class AppComponent {
 
     public localStorage: CoolLocalStorage;
     public chatProfile: ChatProfile;
+    public PassCode : string;
 
     constructor(private elementRef: ElementRef, localStorage: CoolLocalStorage)
     {
         this.localStorage = localStorage;   
-        if (this.elementRef.nativeElement.getAttribute('rooms') != null)
+        if (this.elementRef.nativeElement.getAttribute('room') != null)
         {
-            var Rooms = (this.elementRef.nativeElement.getAttribute('rooms').split(',') as string[]).filter(x => x != '');
-            var UserRooms: Room[] = [];
+            //Only one room will come. In current scenerio
+            var RoomName = this.elementRef.nativeElement.getAttribute('room');
+            var UserRoom: Room[] = [];
 
-            for (var i = 0; i < Rooms.length; i++) {
-                UserRooms.push(new Room(Rooms[i], [] , 0));
+            //Check passcode is there or not. If there joining in existing room
+            if (this.elementRef.nativeElement.getAttribute('passCode') != null)
+            {
+                this.PassCode = this.elementRef.nativeElement.getAttribute('passCode');
             }
-            this.localStorage.setObject("UserProfile", new ChatProfile("", UserRooms, this.elementRef.nativeElement.getAttribute('name')));
+            UserRoom.push(new Room(RoomName, [] , 0, this.PassCode));
+            this.localStorage.setObject("UserProfile", new ChatProfile("", UserRoom, this.elementRef.nativeElement.getAttribute('name')));
         }
+
+
     }
 }

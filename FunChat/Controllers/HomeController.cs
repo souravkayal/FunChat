@@ -13,6 +13,7 @@ namespace ChatApp.Controllers
     public class UserWelcome
     {
         public string RoomName { get; set; }
+        public string PassCode { get; set; }
         public string UserName { get; set; }
     }
 
@@ -28,6 +29,7 @@ namespace ChatApp.Controllers
         {
             ViewBag.Rooms = Info.RoomName;
             ViewBag.UserName = Info.UserName;
+            ViewBag.PassCode = Info.PassCode;
             return View("Index");
         }
 

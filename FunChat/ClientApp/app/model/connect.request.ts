@@ -3,15 +3,17 @@
 
 export class ConnectRequest
 {
-    public Rooms : string[]
+    public Room : string
     public ConnectionId: string
     public UserName: string
+    public PassCode : string
 
-    public constructor(Rooms: string[], ConnectionId: string, UserName:string)
+    public constructor(Room: string, ConnectionId: string, UserName:string, PassCode : string)
     {
-        this.Rooms = Rooms;
+        this.Room = Room;
         this.ConnectionId = ConnectionId;
         this.UserName = UserName;
+        this.PassCode = PassCode;
     }
 }
 
@@ -19,7 +21,9 @@ export class EventNotifier
 {
     public CurrentUser : User
     public Message: string
-    public ActionType : string
+    public PassCode: string
+    public ActionType: string
+    public RoomName : string
     public Users: User[]
 }
 
@@ -52,12 +56,14 @@ export class Room
     public RoomName: string;
     public Messages ?: ChatMessage[]
     public UnseenMessageCount: number
+    public PassCode : string
 
-    public constructor(RoomName: string, Messages: ChatMessage[], UnseenMessageCount: number)
+    public constructor(RoomName: string, Messages: ChatMessage[], UnseenMessageCount: number , PassCode : string)
     {
         this.RoomName = RoomName;
         this.Messages = Messages;
         this.UnseenMessageCount = UnseenMessageCount;
+        this.PassCode = PassCode;
     }
 }
 

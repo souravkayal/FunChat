@@ -8,7 +8,7 @@ namespace Core.Model
     public class Room
     {
         public string RoomName { get; set; }
-        public string Passcode { get; set; }
+        public string PassCode { get; set; }
         public List<User> Users { get; set; }
     }
 
@@ -41,14 +41,17 @@ namespace Core.Model
 
     public class ConnectRequest
     {
-        [JsonProperty("Rooms")]
-        public string[] Rooms { get; set; }
+        [JsonProperty("Room")]
+        public string Room { get; set; }
 
         [JsonProperty("ConnectionId")]
         public string ConnectionId { get; set; }
 
         [JsonProperty("UserName")]
         public string UserName { get; set; }
+
+        [JsonProperty("PassCode")]
+        public string PassCode { get; set; }
     }
 
     public class DisconnectRequest
@@ -68,7 +71,8 @@ namespace Core.Model
         public User CurrentUser { get; set; }
         public string Message { get; set; }
         public string ActionType { get; set; }
-        public string Passcode { get; set; }
+        public string PassCode { get; set; }
+        public string RoomName { get; set; }
         public List<User> Users { get; set; }
     }
 

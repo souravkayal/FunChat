@@ -7,7 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CoolLocalStorage } from 'angular2-cool-storage';
 //import { ToastrService } from 'ngx-toastr';
 import { Renderer } from '@angular/core';
-
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 
 @Component({
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit  {
     public messages: ChatMessage[] = [];
     public messagesStore: ChatMessage[] = [];
     public usersInRoom: User[] = [];
-
+     
     @ViewChild('scrollMe') private myScrollContainer: ElementRef;
     public currentRoom: string; //current selected room
     public connectionId: string; //current user connection id
@@ -37,11 +37,16 @@ export class HomeComponent implements OnInit  {
     localStorage: CoolLocalStorage;
     chatProfile: ChatProfile;
     public selectedItem: any;
+    public passCode: string;
+
     // private toastr: ToastrService
-    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer)
+    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer, public toastr: ToastsManager, vcr: ViewContainerRef)
     {
         this.localStorage = localStorage; 
         this.chatProfile = this.localStorage.getObject("UserProfile");
+        this.toastr.setRootViewContainerRef(vcr);
+
+        this.toastr.success('You are awesome!', 'Success!',);
     }
 
 
@@ -63,8 +68,10 @@ export class HomeComponent implements OnInit  {
         this.chatService.checkGroupExist(createRoom.value).subscribe(result => {
             if (result == false) {
                 //connectMe function will create new Group and add user there.
-                this.hubConnection.invoke("ConnectMe", new ConnectRequest(Newroom, this.connectionId, this.chatProfile.UserName));
-                this.chatProfile.Rooms.push(new Room(createRoom.value, [], 0));
+
+                //this.hubConnection.invoke("ConnectMe", new ConnectRequest(Newroom, this.connectionId, this.chatProfile.UserName));
+                //this.chatProfile.Rooms.push(new Room(createRoom.value, [], 0));
+
                 this.selectedItem = createRoom.value;
                 this.currentRoom = createRoom.value;
 
@@ -118,6 +125,10 @@ export class HomeComponent implements OnInit  {
             this.usersInRoom = [];
             this.usersInRoom = data.Users;
             this.connectionId = data.CurrentUser.ConnectionId;
+
+            //Passcode will display only for current room
+            this.passCode = data.PassCode;
+            this.currentRoom = data.RoomName;
             this.messages.push(new ChatMessage(data.CurrentUser.Name + data.Message, "", "", "", ""));
             //(this.localStorage.getObject("UserProfile") as ChatProfile).ConnectionId = this.connectionId;
         });
@@ -156,7 +167,7 @@ export class HomeComponent implements OnInit  {
 
         this.hubConnection.start()
             .then(() => {
-                this.hubConnection.invoke("ConnectMe", new ConnectRequest(this.chatProfile.Rooms.map(f => f.RoomName) , this.connectionId, this.chatProfile.UserName));
+                this.hubConnection.invoke("ConnectMe", new ConnectRequest(this.chatProfile.Rooms[0].RoomName , this.connectionId, this.chatProfile.UserName, this.chatProfile.Rooms[0].PassCode));
                 console.log('Hub connection started');
             })
             .catch(err => {

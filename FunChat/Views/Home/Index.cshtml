@@ -6,7 +6,7 @@
 @*asp-prerender-module="ClientApp/dist/main-server"*@
  @*rooms="@ViewBag.Rooms" name="@ViewBag.UserName"*@
 
-<app rooms="@ViewBag.Rooms" name="@ViewBag.UserName"> <i class="fa fa-circle-o-notch fa-spin"></i> Loading...</app>
+<app room="@ViewBag.Rooms" name="@ViewBag.UserName" passCode ="@ViewBag.PassCode"> <i class="fa fa-circle-o-notch fa-spin"></i> Loading...</app>
 <script src="~/dist/vendor.js" asp-append-version="true"></script>
 
 @section scripts {
