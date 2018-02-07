@@ -13,18 +13,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component'
 import { CoolStorageModule } from 'angular2-cool-storage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastModule , ToastOptions } from 'ng2-toastr/ng2-toastr';
-
-export class CustomOptions extends ToastOptions {
-    animate = 'fade';
-    dismiss = 'auto';
-    showCloseButton = true;
-    newestOnTop = true;
-    enableHTML = true;
-    positionClass = "toast-bottom-right";
-    // messageClass = '';
-    // titleClass = '';
-}
-
+import { CustomToastOptions } from './model/toastOption'
 
 @NgModule({
     declarations: [
@@ -37,7 +26,7 @@ export class CustomOptions extends ToastOptions {
     ],
 
     providers: [
-        { provide: ToastOptions, useClass: CustomOptions }
+        { provide: ToastOptions, useClass: CustomToastOptions }
     ],
 
     imports: [

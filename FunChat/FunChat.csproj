@@ -23,18 +23,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\app\components\home\home.component_old.html" />
-    <None Remove="ClientApp\app\components\home\home.component_old.ts" />
+    <Compile Remove="Core\ChatManager.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\app\model\" />
+    <None Remove="ClientApp\app\components\home\home.component_old.html" />
+    <None Remove="ClientApp\app\components\home\home.component_old.ts" />
+    <None Remove="ClientApp\app\model\toastOption.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ClientApp\app\service\" />
     <Folder Include="Core\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\model\toastOption.ts" />
     <TypeScriptCompile Include="wwwroot\dist\js\bootstrap.js" />
   </ItemGroup>
 

@@ -45,8 +45,6 @@ export class HomeComponent implements OnInit  {
         this.localStorage = localStorage; 
         this.chatProfile = this.localStorage.getObject("UserProfile");
         this.toastr.setRootViewContainerRef(vcr);
-
-        this.toastr.success('You are awesome!', 'Success!',);
     }
 
 
@@ -129,7 +127,7 @@ export class HomeComponent implements OnInit  {
             //Passcode will display only for current room
             this.passCode = data.PassCode;
             this.currentRoom = data.RoomName;
-            this.messages.push(new ChatMessage(data.CurrentUser.Name + data.Message, "", "", "", ""));
+            this.toastr.success('You' + data.Message, 'Success!', );
             //(this.localStorage.getObject("UserProfile") as ChatProfile).ConnectionId = this.connectionId;
         });
 
