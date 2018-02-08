@@ -1,0 +1,7 @@
+C:\Learning\FunChat\Core\bin\Release\Core.dll
+C:\Learning\FunChat\Core\bin\Release\Core.pdb
+C:\Learning\FunChat\Core\bin\Release\Newtonsoft.Json.dll
+C:\Learning\FunChat\Core\obj\Release\Core.csprojResolveAssemblyReference.cache
+C:\Learning\FunChat\Core\obj\Release\Core.csproj.CoreCompileInputs.cache
+C:\Learning\FunChat\Core\obj\Release\Core.dll
+C:\Learning\FunChat\Core\obj\Release\Core.pdb

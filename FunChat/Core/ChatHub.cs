@@ -22,11 +22,12 @@ namespace ChatApp.Core
 
         public async Task ConnectMe(ConnectRequest Request)
         {
-            var user = new User { ConnectionId = Context.ConnectionId, Name = Request.UserName, OnlineStatus = OnlineStatus.Online };
+            var ConnectionId = Context.ConnectionId;
+            var user = new User { ConnectionId = ConnectionId, Name = Request.UserName, OnlineStatus = OnlineStatus.Online };
             var passCode = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4).ToUpper();
             //foreach (var item in Request.Rooms)
             //{
-                bool isPresent = false;
+                bool isUserPresentInRoom = false;
 
                 if (_rooms.ContainsKey(Request.Room)) //Room is there -so add user in group
                 {
@@ -43,7 +44,7 @@ namespace ChatApp.Core
                         }
                     else
                     {
-                        isPresent = true;
+                        isUserPresentInRoom = true;
                         await Clients.Client(Request.ConnectionId).InvokeAsync("notifyUser", new EventNotifier
                         {
                             Message = "You are already connected in "+ Request.Room + " group !",
@@ -62,19 +63,36 @@ namespace ChatApp.Core
                 }
 
                 //Group Not present : Send notification only to first Connected User
-                if(!isPresent)
+                if(!isUserPresentInRoom)
                 {
-                    await Groups.AddAsync(Context.ConnectionId, Request.Room);
+                    //Inform other in group
                     await Clients.Group(Request.Room).InvokeAsync("userEvent", new EventNotifier
-                        {
-                            CurrentUser = user,
-                            Message = ": join in chat!",
-                            ActionType = "Connect",
-                            PassCode = _rooms[Request.Room].PassCode,
-                            RoomName = Request.Room,
-                            Users = _rooms[Request.Room].Users
-                        });
-                }
+                    {
+                        Message = user.Name + " join in chat!",
+                        ActionType = "Connected",
+                        Users = _rooms[Request.Room].Users
+                    });
+
+                    //Add user in room, if room not present SignalR will create new one and Add
+                    await Groups.AddAsync(ConnectionId, Request.Room);
+
+                    //send connection Id and room name to new join user
+                    await Clients.Client(ConnectionId).InvokeAsync("notifyUser",
+                          new EventNotifier
+                          {
+                              Message = "You Join in " + Request.Room + " room",
+                              ActionType = "Connected",
+                              PassCode = _rooms[Request.Room].PassCode,
+                              RoomName = Request.Room,
+                              Users = _rooms[Request.Room].Users,
+                              CurrentUser = user
+                          }
+                        );
+
+                    
+
+                
+            }
             //}
         }
 
@@ -87,29 +105,34 @@ namespace ChatApp.Core
                 //check whether user's connection id is there or not, if there remove
                 if (group.Users.Where(f => f.ConnectionId == Request.ConnectionId).Count() > 0)
                 {
-
-                    //notify group then
-                    await Clients.Group(Request.Room).InvokeAsync("userEvent",
-                    new EventNotifier
-                    {
-                        CurrentUser = new User { Name = Request.UserName, ConnectionId = Context.ConnectionId },
-                        Message = ": left from chat!",
-                        ActionType = "Disconnect",
-                        Users = group.Users.Where(f => f.ConnectionId != Request.ConnectionId).ToList()
-                    });
-
                     //notify user @ first.
                     await Clients.Client(Request.ConnectionId).InvokeAsync("notifyUser",
                       new EventNotifier
                       {
-                          Message = "You left the room",
+                          Message = "You left from room " + Request.Room,
                           ActionType = "Disconnect"
                       }
                     );
 
-                    group.Users.RemoveAll((x) => x.ConnectionId == Request.ConnectionId && x.Name == Request.UserName);
                     //remove user from SignalR group
                     await Groups.RemoveAsync(Context.ConnectionId, Request.Room);
+
+                    //remove user from in memory store
+                    group.Users.RemoveAll((x) => x.ConnectionId == Request.ConnectionId && x.Name == Request.UserName);
+
+                    //notify other member in group 
+                    await Clients.Group(Request.Room).InvokeAsync("userEvent",
+                    new EventNotifier
+                    {
+                        CurrentUser = new User { Name = Request.UserName, ConnectionId = Context.ConnectionId },
+                        Message = Request.UserName + " : left from " + Request.Room  + "room",
+                        ActionType = "Disconnect",
+                        Users = group.Users.Where(f => f.ConnectionId != Request.ConnectionId).ToList(),
+                        //PassCode = _rooms[Request.Room].PassCode,
+                        //RoomName = Request.Room,
+                    });
+
+                    
                 }
             }
         }

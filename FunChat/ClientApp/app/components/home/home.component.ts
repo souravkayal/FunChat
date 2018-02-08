@@ -7,8 +7,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CoolLocalStorage } from 'angular2-cool-storage';
 //import { ToastrService } from 'ngx-toastr';
 import { Renderer } from '@angular/core';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
+//import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+//import { ToasterModule, ToasterService } from 'angular2-toaster';
 
 @Component({
     selector: 'home',
@@ -39,12 +40,18 @@ export class HomeComponent implements OnInit  {
     public selectedItem: any;
     public passCode: string;
 
+    //private toasterService: ToasterService;
+
+    //, toasterService: ToasterService
     // private toastr: ToastrService
-    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer, public toastr: ToastsManager, vcr: ViewContainerRef)
+    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer )
     {
+        //public toastr: ToastsManager, vcr: ViewContainerRef
         this.localStorage = localStorage; 
         this.chatProfile = this.localStorage.getObject("UserProfile");
-        this.toastr.setRootViewContainerRef(vcr);
+        //this.toastr.setRootViewContainerRef(vcr);
+
+        //this.toasterService.pop('success', 'Args Title', 'Args Body');
     }
 
 
@@ -104,8 +111,9 @@ export class HomeComponent implements OnInit  {
 
     }
 
-    public disconnectMe(): void {
+    public disconnectMe(): boolean {
         this.hubConnection.invoke('DisconnectMe', new DosconnectRequest(this.currentRoom , this.connectionId, this.chatProfile.UserName));
+        return false;
     }
 
     public changeOnlineStatus(OnlineStatus: OnlineStatus): void {
@@ -115,26 +123,34 @@ export class HomeComponent implements OnInit  {
     public notifyRoom() {
         this.hubConnection.invoke("TypeNofification", this.chatProfile.UserName, this.currentRoom);
     }
-
+    
     ngOnInit() {
         this.hubConnection = new HubConnection('/chat');
 
         this.hubConnection.on('userEvent', (data: EventNotifier) => {
             this.usersInRoom = [];
             this.usersInRoom = data.Users;
-            this.connectionId = data.CurrentUser.ConnectionId;
 
-            //Passcode will display only for current room
-            this.passCode = data.PassCode;
-            this.currentRoom = data.RoomName;
-            this.toastr.success('You' + data.Message, 'Success!', );
+            //this.toastr.success(data.Message, 'Message');
+
             //(this.localStorage.getObject("UserProfile") as ChatProfile).ConnectionId = this.connectionId;
         });
 
         this.hubConnection.on('notifyUser', (data: EventNotifier) => {
-            alert(data.Message);
+
+            if (data.ActionType == "Connected") {
+                this.passCode = data.PassCode;
+                this.currentRoom = data.RoomName;
+                this.usersInRoom = [];
+                this.usersInRoom = data.Users;
+                this.connectionId = data.CurrentUser.ConnectionId;
+
+                console.log(this.connectionId);
+
+                //this.toastr.success(data.Message, 'Message');
+            }
             if (data.ActionType == "Disconnect") {
-                //remove current group from chat profile
+                //remove current room/group from chat profile
                 this.chatProfile.Rooms.splice(this.chatProfile.Rooms.findIndex(f => f.RoomName == this.currentRoom), 1);
                 //Remove all users in that room
                 this.usersInRoom = [];
@@ -142,6 +158,8 @@ export class HomeComponent implements OnInit  {
                 this.messages = [];
                 //update local storage with new profile
                 this.localStorage.setObject("UserProfile", this.chatProfile);
+
+                //this.toastr.success(data.Message, 'Message');
             }
         });
 

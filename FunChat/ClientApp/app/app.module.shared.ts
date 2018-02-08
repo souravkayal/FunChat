@@ -12,8 +12,10 @@ import { CounterComponent } from './components/counter/counter.component';
 import { WelcomeComponent } from './components/welcome/welcome.component'
 import { CoolStorageModule } from 'angular2-cool-storage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ToastModule , ToastOptions } from 'ng2-toastr/ng2-toastr';
-import { CustomToastOptions } from './model/toastOption'
+//import { ToastModule , ToastOptions } from 'ng2-toastr/ng2-toastr';
+//import { CustomToastOptions } from './model/toastOption'
+
+//import { ToasterModule, ToasterService } from 'angular2-toaster';
 
 @NgModule({
     declarations: [
@@ -25,9 +27,9 @@ import { CustomToastOptions } from './model/toastOption'
         HomeComponent
     ],
 
-    providers: [
-        { provide: ToastOptions, useClass: CustomToastOptions }
-    ],
+    //providers: [
+    //    { provide: ToastOptions, useClass: CustomToastOptions }
+    //],
 
     imports: [
         CommonModule,
@@ -35,7 +37,7 @@ import { CustomToastOptions } from './model/toastOption'
         FormsModule,
         CoolStorageModule,
         BrowserAnimationsModule,
-        ToastModule.forRoot(),
+        //ToasterModule.forRoot(),
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
