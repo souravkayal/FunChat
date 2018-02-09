@@ -1,4 +1,5 @@
 <br /><br /><br /><br />
+
 <div class="main_section">
     <div class="container">
         <div class="chat_container">
@@ -39,13 +40,12 @@
 
                             <li class="left clearfix" *ngFor="let item of usersInRoom">
                                 <span class="chat-img pull-left">
-                                    <!--<img src="" alt="User Avatar" class="img-circle">-->
+                                    <img src="http://saffroninteractive.com/wp-content/uploads/2017/10/empty-avatar2.png" alt="User Avatar" class="img-circle">
                                 </span>
                                 <div class="chat-body clearfix">
                                     <div class="header_sec">
-                                        <strong class="primary-font">{{item.Name}} [{{OnlineStatus[item.OnlineStatus]}}] </strong> <strong class="pull-right">
-                                            09:45AM
-                                        </strong>
+                                        <strong class="primary-font" style="vertical-align:sub">{{item.Name}} </strong> 
+                                        <div class="{{OnlineStatus[item.OnlineStatus]}} pull-right"></div>
                                     </div>
                                     <!--<div class="contact_sec">
                                         <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
@@ -70,15 +70,15 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                                    <li><a href="">Offline</a></li>
-                                    <li><a href="">Busy</a></li>
-                                    <li><a href="">Online</a></li>
+                                    <li><a href="" (click)="changeOnlineStatus(0)">Online</a></li>
+                                    <li><a href="" (click)="changeOnlineStatus(1)">Offline</a></li>
+                                    <li><a href="" (click)="changeOnlineStatus(2)">Away</a></li>
+                                    <li><a href="" (click)="changeOnlineStatus(3)">Busy</a></li>
                                     <li><a href="" (click)="disconnectMe()">Leave Room</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div><!--new_message_head-->
-
                     <div class="chat_area" #scrollMe>
                         <ul class="list-unstyled">
                             
@@ -104,9 +104,13 @@
                                 </div>
                             </li>-->
                         </ul>
+
+                                               
+                       <span style="color:#808080;">{{typeNotify}}</span>
                     </div><!--chat_area-->
+                    
                     <div class="message_write">
-                        <textarea class="form-control" placeholder="type a message" [(ngModel)]="message" (keyup.enter)="sendMessage();"(keyup)="notifyRoom()"></textarea>
+                        <textarea class="form-control" placeholder="type a message" [(ngModel)]="message" (keyup.enter)="sendMessage();" (keyup)="notifyRoom()"></textarea>
                         <div class="clearfix"></div>
                         <div class="chat_bottom">
                             <a href="#" class="pull-left upload_btn">

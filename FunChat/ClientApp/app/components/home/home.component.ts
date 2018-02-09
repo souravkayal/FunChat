@@ -5,11 +5,9 @@ import { chatService } from '../../service/chat.service'
 import { User, ChatMessage, OnlineStatus, UserTypingNotification } from '../../model/chat.model'
 import { BrowserModule } from '@angular/platform-browser';
 import { CoolLocalStorage } from 'angular2-cool-storage';
-//import { ToastrService } from 'ngx-toastr';
 import { Renderer } from '@angular/core';
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
-//import { ToastsManager } from 'ng2-toastr/ng2-toastr';
-//import { ToasterModule, ToasterService } from 'angular2-toaster';
 
 @Component({
     selector: 'home',
@@ -40,18 +38,12 @@ export class HomeComponent implements OnInit  {
     public selectedItem: any;
     public passCode: string;
 
-    //private toasterService: ToasterService;
 
-    //, toasterService: ToasterService
-    // private toastr: ToastrService
-    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer )
+
+    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer, private toastr: ToastsManager)
     {
-        //public toastr: ToastsManager, vcr: ViewContainerRef
         this.localStorage = localStorage; 
         this.chatProfile = this.localStorage.getObject("UserProfile");
-        //this.toastr.setRootViewContainerRef(vcr);
-
-        //this.toasterService.pop('success', 'Args Title', 'Args Body');
     }
 
 
@@ -116,8 +108,9 @@ export class HomeComponent implements OnInit  {
         return false;
     }
 
-    public changeOnlineStatus(OnlineStatus: OnlineStatus): void {
+    public changeOnlineStatus(OnlineStatus: OnlineStatus): boolean {
         this.hubConnection.invoke("ChangeStatus", new ConnectionStatusChangeRequest(this.currentRoom, new User(this.chatProfile.UserName, this.connectionId, OnlineStatus)));
+        return false;
     }
 
     public notifyRoom() {
@@ -130,9 +123,7 @@ export class HomeComponent implements OnInit  {
         this.hubConnection.on('userEvent', (data: EventNotifier) => {
             this.usersInRoom = [];
             this.usersInRoom = data.Users;
-
             //this.toastr.success(data.Message, 'Message');
-
             //(this.localStorage.getObject("UserProfile") as ChatProfile).ConnectionId = this.connectionId;
         });
 
@@ -145,9 +136,7 @@ export class HomeComponent implements OnInit  {
                 this.usersInRoom = data.Users;
                 this.connectionId = data.CurrentUser.ConnectionId;
 
-                console.log(this.connectionId);
-
-                //this.toastr.success(data.Message, 'Message');
+                this.toastr.success(data.Message, 'Message');
             }
             if (data.ActionType == "Disconnect") {
                 //remove current room/group from chat profile
@@ -158,9 +147,9 @@ export class HomeComponent implements OnInit  {
                 this.messages = [];
                 //update local storage with new profile
                 this.localStorage.setObject("UserProfile", this.chatProfile);
-
-                //this.toastr.success(data.Message, 'Message');
+                this.toastr.success(data.Message, 'Message');
             }
+           
         });
 
         this.hubConnection.on('sendClient', (messageItem: ChatMessage) => {
@@ -175,10 +164,13 @@ export class HomeComponent implements OnInit  {
         });
 
         this.hubConnection.on('userTyping', (notification: UserTypingNotification) => {
-            this.typeNotify = notification.UserName + " is typing..."
-            setTimeout(() => {
-                this.typeNotify = "";
-            },1000);
+
+            if (notification.RoomName == this.currentRoom) {
+                this.typeNotify = notification.UserName + " is typing..."
+                setTimeout(() => {
+                    this.typeNotify = "";
+                }, 1000);
+            }
         });
 
         this.hubConnection.start()

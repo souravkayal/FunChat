@@ -1,7 +1,8 @@
-import { Component, Input, ElementRef } from '@angular/core';
+import { Component, Input, ElementRef, ViewContainerRef } from '@angular/core';
 import { CoolLocalStorage } from 'angular2-cool-storage';
 import { ChatProfile , Room } from '../../model/connect.request'
 import { ChatMessage } from '../../model/chat.model'
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 @Component({
     selector: 'app',
@@ -14,8 +15,10 @@ export class AppComponent {
     public chatProfile: ChatProfile;
     public PassCode : string;
 
-    constructor(private elementRef: ElementRef, localStorage: CoolLocalStorage)
+    constructor(private elementRef: ElementRef, localStorage: CoolLocalStorage, public toastr: ToastsManager, vcr: ViewContainerRef)
     {
+        this.toastr.setRootViewContainerRef(vcr);
+
         this.localStorage = localStorage;   
         if (this.elementRef.nativeElement.getAttribute('room') != null)
         {

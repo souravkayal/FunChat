@@ -88,12 +88,7 @@ namespace ChatApp.Core
                               CurrentUser = user
                           }
                         );
-
-                    
-
-                
             }
-            //}
         }
 
         public async Task DisconnectMe(DisconnectRequest Request)
@@ -131,8 +126,6 @@ namespace ChatApp.Core
                         //PassCode = _rooms[Request.Room].PassCode,
                         //RoomName = Request.Room,
                     });
-
-                    
                 }
             }
         }
@@ -152,7 +145,8 @@ namespace ChatApp.Core
                         CurrentUser = new User { ConnectionId = Context.ConnectionId, Name = Request.User.Name },
                         Message = " went to " + Request.User.OnlineStatus.ToString(),
                         ActionType = "StatusChange",
-                        Users = _rooms[Request.GroupName].Users
+                        Users = _rooms[Request.GroupName].Users,
+                        RoomName = Request.GroupName
                     });
             }
         }

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -12,10 +12,19 @@ import { CounterComponent } from './components/counter/counter.component';
 import { WelcomeComponent } from './components/welcome/welcome.component'
 import { CoolStorageModule } from 'angular2-cool-storage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-//import { ToastModule , ToastOptions } from 'ng2-toastr/ng2-toastr';
-//import { CustomToastOptions } from './model/toastOption'
+import { BrowserModule } from '@angular/platform-browser';
 
-//import { ToasterModule, ToasterService } from 'angular2-toaster';
+import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
+
+export class CustomOptions extends ToastOptions {
+    animate = 'flyRight';
+    positionClass= 'toast-bottom-right';
+    dismiss = 'auto';
+    showCloseButton = true;
+    newestOnTop = true;
+    enableHTML = true;
+}
+
 
 @NgModule({
     declarations: [
@@ -26,18 +35,20 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         WelcomeComponent,
         HomeComponent
     ],
-
-    //providers: [
-    //    { provide: ToastOptions, useClass: CustomToastOptions }
-    //],
+    providers: [
+        {
+            provide: ToastOptions,
+            useClass: CustomOptions
+        }],
 
     imports: [
         CommonModule,
         HttpModule,
         FormsModule,
         CoolStorageModule,
+        BrowserModule,
         BrowserAnimationsModule,
-        //ToasterModule.forRoot(),
+        ToastModule.forRoot(),
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
