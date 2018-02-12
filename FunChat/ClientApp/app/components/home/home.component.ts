@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit  {
     chatProfile: ChatProfile;
     public selectedItem: any;
     public passCode: string;
-
+    roomOwnByUser: string[];
 
 
     constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer, private toastr: ToastsManager)
@@ -52,12 +52,18 @@ export class HomeComponent implements OnInit  {
         this.message = "";
     }
 
-    public getAllRooms(): void {
-        this.chatService.getAllGroup().subscribe(groups => {
-            //this.availableRooms = [];
-            //this.availableRooms = groups;
+    //function to get all rooms created by current user
+    public getAllCreatedRoom(userName : string): void {
+        this.chatService.GetAllRoomsByOwner(userName).subscribe(rooms => {
+
+            this.roomOwnByUser = [];
+            this.roomOwnByUser = rooms;
         });
     }
+
+    //get all rooms where the user is already join.
+
+
 
     public createNewRoom(createRoom: any): void {
         var Newroom : string[] = [createRoom.value ];
@@ -79,7 +85,7 @@ export class HomeComponent implements OnInit  {
     }
 
 
-
+    //Get all members in  current room
     public getAllMemberInRoom(): void {
         this.chatService.getUserInGroup(this.currentRoom).subscribe(users => {
             this.usersInRoom = [];
@@ -89,6 +95,7 @@ export class HomeComponent implements OnInit  {
          });
     }
 
+    //Change chat room
     public changeCharRoom(value: string, event: any): void {
         this.currentRoom = value;
         //pull all member in that room 
@@ -116,7 +123,14 @@ export class HomeComponent implements OnInit  {
     public notifyRoom() {
         this.hubConnection.invoke("TypeNofification", this.chatProfile.UserName, this.currentRoom);
     }
-    
+
+    public deleteRoom(roomName :string) {
+        this.hubConnection.invoke("DeleteRoom", roomName , this.chatProfile.UserName);
+        return false;
+    }
+
+
+
     ngOnInit() {
         this.hubConnection = new HubConnection('/chat');
 
@@ -128,7 +142,7 @@ export class HomeComponent implements OnInit  {
         });
 
         this.hubConnection.on('notifyUser', (data: EventNotifier) => {
-
+            
             if (data.ActionType == "Connected") {
                 this.passCode = data.PassCode;
                 this.currentRoom = data.RoomName;
@@ -138,7 +152,7 @@ export class HomeComponent implements OnInit  {
 
                 this.toastr.success(data.Message, 'Message');
             }
-            if (data.ActionType == "Disconnect") {
+            if (data.ActionType == "Disconnect" || data.ActionType == "RoomDeleted") {
                 //remove current room/group from chat profile
                 this.chatProfile.Rooms.splice(this.chatProfile.Rooms.findIndex(f => f.RoomName == this.currentRoom), 1);
                 //Remove all users in that room
@@ -147,9 +161,11 @@ export class HomeComponent implements OnInit  {
                 this.messages = [];
                 //update local storage with new profile
                 this.localStorage.setObject("UserProfile", this.chatProfile);
-                this.toastr.success(data.Message, 'Message');
+                this.toastr.warning(data.Message, 'Message');
+                
+                if (this.chatProfile.UserName == data.CurrentUser.Name)
+                    this.getAllCreatedRoom(this.chatProfile.UserName);
             }
-           
         });
 
         this.hubConnection.on('sendClient', (messageItem: ChatMessage) => {
@@ -175,15 +191,16 @@ export class HomeComponent implements OnInit  {
 
         this.hubConnection.start()
             .then(() => {
-                this.hubConnection.invoke("ConnectMe", new ConnectRequest(this.chatProfile.Rooms[0].RoomName , this.connectionId, this.chatProfile.UserName, this.chatProfile.Rooms[0].PassCode));
-                console.log('Hub connection started');
+                this.hubConnection.invoke("ConnectMe", new ConnectRequest(this.chatProfile.Rooms[0].RoomName, this.connectionId, this.chatProfile.UserName, this.chatProfile.Rooms[0].PassCode)).
+                    then(() => {
+                        this.getAllCreatedRoom(this.chatProfile.UserName);
+                    })
             })
             .catch(err => {
                 console.log('Error while establishing connection:' + err);
             });
 
         this.scrollToBottom();
-        //this.getAllRooms();
     }
 
     ngAfterViewChecked() {

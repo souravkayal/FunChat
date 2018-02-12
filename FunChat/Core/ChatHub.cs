@@ -19,7 +19,6 @@ namespace ChatApp.Core
         public override async Task OnConnectedAsync()
         {
         }
-
         public async Task ConnectMe(ConnectRequest Request)
         {
             var ConnectionId = Context.ConnectionId;
@@ -58,7 +57,8 @@ namespace ChatApp.Core
                     {
                         RoomName = Request.Room,
                         PassCode = passCode,
-                        Users = new List<User> { user }
+                        Users = new List<User> { user },
+                        Creator = user
                     });
                 }
 
@@ -90,7 +90,6 @@ namespace ChatApp.Core
                         );
             }
         }
-
         public async Task DisconnectMe(DisconnectRequest Request)
         {
             //check whether user is connected or not in that Room
@@ -129,7 +128,6 @@ namespace ChatApp.Core
                 }
             }
         }
-
         public async Task ChangeStatus(ConnectionStatusChangeRequest Request)
         {
             if (_rooms.ContainsKey(Request.GroupName))
@@ -150,7 +148,6 @@ namespace ChatApp.Core
                     });
             }
         }
-
         public override async Task OnDisconnectedAsync(Exception ex)
         {
             //await Clients.All.InvokeAsync("sendClient", $"{ _OpenRoom[Context.ConnectionId] }: left");
@@ -166,7 +163,6 @@ namespace ChatApp.Core
                     SendTime = DateTime.Now.ToLongTimeString()
                 });
         }
-
         public async Task TypeNofification(string Name, string Room)
         {
             await Clients.Group(Room).InvokeAsync("userTyping",
@@ -175,6 +171,24 @@ namespace ChatApp.Core
                     UserName = Name,
                     RoomName = Room
                 });
+        }
+
+        public async Task DeleteRoom(string Room, string UserName)
+        {
+            if(_rooms.ContainsKey(Room))
+            {
+                Room deletedRoom = null;
+                _rooms.TryRemove(Room, out deletedRoom);
+
+                //Once room is deleted send notification to all member of the room.
+                await Clients.Group(Room).InvokeAsync("notifyUser",
+                    new EventNotifier
+                    {
+                        CurrentUser = new User { Name = UserName, ConnectionId = Context.ConnectionId },
+                        Message = UserName + " : has deleted " + Room + "room",
+                        ActionType = "RoomDeleted",
+                    });
+            }
         }
 
     }

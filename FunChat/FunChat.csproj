@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\app\service\" />
+    <Folder Include="ClientApp\images\" />
     <Folder Include="Core\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>

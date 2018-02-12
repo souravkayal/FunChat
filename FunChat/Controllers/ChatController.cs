@@ -33,10 +33,17 @@ namespace ChatApp.Controllers
             return ChatService.GetAllGroup();
         }
 
+        [Route("getRoomByOwner/{UserName}")]
+        public List<Room> GetAllRoomsByOwner(string UserName)
+        {
+            return ChatService.GetAllRoomsByOwner(UserName);
+        }
+        
         [Route("getAllInGroup/{GroupName}")]
         public List<User> GetAllInGroup(string GroupName)
         {
             return ChatService.GetAllInGroup(GroupName);
         }
+                
     }
 }

@@ -30,5 +30,11 @@ namespace ChatApp.Core
             return ChatHub.GetAllGroups();
         }
 
+        public List<Room> GetAllRoomsByOwner(string UserName)
+        {
+            var rooms = ChatHub.GetAllRooms().Where(f => f.Creator.Name == UserName).ToList();
+            return rooms;
+        }
+
     }
 }

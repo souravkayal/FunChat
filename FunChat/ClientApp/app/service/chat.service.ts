@@ -9,7 +9,7 @@ import { User } from '../model/chat.model'
 @Injectable()
 export class chatService {  
 
-    public CHAT_API_ENDPOINT: string = 'http://localhost:28855/api/chat';
+   public CHAT_API_ENDPOINT: string = 'http://localhost:28855/api/chat';
    constructor(private _http: Http) { }
 
    checkGroupExist(roomName : any): Observable<boolean> {
@@ -22,6 +22,12 @@ export class chatService {
        return this._http.get(this.CHAT_API_ENDPOINT + "/getAllGroup/")
            .map((response: Response) => <string[]>response.json());
    } 
+
+   GetAllRoomsByOwner(roomName: string): Observable<string[]> {
+       return this._http.get(this.CHAT_API_ENDPOINT + "/getRoomByOwner/" + roomName)
+           .map((response: Response) => <string[]>response.json());
+   } 
+
 
    getUserInGroup(groupName : string): Observable<User[]> {
        return this._http.get(this.CHAT_API_ENDPOINT + "/getAllInGroup/" + groupName)

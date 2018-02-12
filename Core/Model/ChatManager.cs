@@ -9,6 +9,7 @@ namespace Core.Model
     {
         public string RoomName { get; set; }
         public string PassCode { get; set; }
+        public User Creator { get; set; }
         public List<User> Users { get; set; }
     }
 

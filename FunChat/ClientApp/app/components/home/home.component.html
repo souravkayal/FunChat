@@ -1,13 +1,75 @@
 <br /><br /><br /><br />
 
+<style>
+    .nav-tabs {
+        border-bottom: 2px solid #DDD;
+    }
+
+        .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+            border-width: 0;
+        }
+
+        .nav-tabs > li > a {
+            border: none;
+            color: #666;
+        }
+
+            .nav-tabs > li.active > a, .nav-tabs > li > a:hover {
+                border: none;
+                color: #4285F4 !important;
+                background: transparent;
+            }
+
+            .nav-tabs > li > a::after {
+                content: "";
+                background: #4285F4;
+                height: 2px;
+                position: absolute;
+                width: 100%;
+                left: 0px;
+                bottom: -1px;
+                transition: all 250ms ease 0s;
+                transform: scale(0);
+            }
+
+        .nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after {
+            transform: scale(1);
+        }
+
+    .tab-nav > li > a::after {
+        background: #21527d none repeat scroll 0% 0%;
+        color: #fff;
+    }
+
+    .tab-pane {
+        padding: 15px 0;
+    }
+
+    .tab-content {
+        padding: 20px
+    }
+
+    .card {
+        background: #FFF none repeat scroll 0% 0%;
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
+    }
+
+    body {
+        background: #EDECEC;
+        padding: 50px
+    }
+</style>
+
+
 <div class="main_section">
     <div class="container">
         <div class="chat_container">
-            <div class="col-sm-3 chat_sidebar">
+            <div class="col-sm-2 chat_sidebar">
                 <div class="row">
                     <div id="custom-search-input">
                         <div class="input-group col-md-12">
-                            <input type="text" class="  search-query form-control" placeholder="Conversation" />
+                            <input type="text" class="search-query form-control" placeholder="Search Member" />
                             <button class="btn btn-danger" type="button">
                                 <span class=" glyphicon glyphicon-search"></span>
                             </button>
@@ -35,9 +97,6 @@
                     </div>-->
                     <div class="member_list">
                         <ul class="list-unstyled">
-
-                            <!--<a href="#" class="list-group-item {{OnlineStatus[item.OnlineStatus]}}" *ngFor="let item of usersInRoom">{{item.Name}} - [{{OnlineStatus[item.OnlineStatus]}}]</a>-->
-
                             <li class="left clearfix" *ngFor="let item of usersInRoom">
                                 <span class="chat-img pull-left">
                                     <img src="http://saffroninteractive.com/wp-content/uploads/2017/10/empty-avatar2.png" alt="User Avatar" class="img-circle">
@@ -57,9 +116,8 @@
                     </div>
                 </div>
             </div>
-            <!--chat_sidebar-->
-
-            <div class="col-sm-9 message_section">
+            
+            <div class="col-sm-6 message_section">
                 <div class="row">
                     <div class="new_message_head">
                         <div class="pull-left"><button><i class="fa fa-plus-square-o" aria-hidden="true"></i> Room Name [{{currentRoom}} - {{passCode}}]</button></div><div class="pull-right">
@@ -104,12 +162,11 @@
                                 </div>
                             </li>-->
                         </ul>
-
-                                               
-                       <span style="color:#808080;">{{typeNotify}}</span>
                     </div><!--chat_area-->
                     
                     <div class="message_write">
+                        <!--[hidden]="!typeNotify"-->
+                        <div style="color:#808080;display:inline-block">{{typeNotify}}</div> 
                         <textarea class="form-control" placeholder="type a message" [(ngModel)]="message" (keyup.enter)="sendMessage();" (keyup)="notifyRoom()"></textarea>
                         <div class="clearfix"></div>
                         <div class="chat_bottom">
@@ -124,6 +181,93 @@
                     </div>
                 </div>
             </div> <!--message_section-->
+
+
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <div>
+                        <div class="card">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#Rooms" aria-controls="Rooms" role="tab" data-toggle="tab">Join Rooms</a></li>
+                                <li role="presentation"><a href="#myRooms" aria-controls="myRooms" role="tab" data-toggle="tab">My Rooms</a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane" id="Rooms">
+                                    {{chatProfile}}                                    
+                                </div>
+                                <div role="tabpanel" class="tab-pane active" id="myRooms" style="padding:0px;">
+
+                                    <div class="room_list">
+                                        <ul class="list-unstyled">
+                                            <li class="left clearfix" *ngFor="let item of roomOwnByUser">
+                                                <div class="chat-body clearfix">
+                                                    <div class="header_sec room_item">
+                                                        <strong class="primary-font" style="vertical-align:sub">{{item.RoomName}} - [ {{ item.PassCode }} ] </strong>
+                                                        <!--<input type="button" class="btn btn-xs btn-danger pull-right" value="Delete"  />-->
+                                                        <a href="#" class="btn btn-xs btn-danger pull-right" (click)="deleteRoom(item.RoomName)">Delete</a>
+                                                        <!--<div class="btn-group pull-right" role="group" aria-label="...">
+                                                            <button type="button" class="btn btn-xs btn-danger"> Delete </button>
+                                                            <button type="button" class="btn btn-xs btn-warning">Inactive</button>
+                                                        </div>-->
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <div class="text-center" *ngIf="roomOwnByUser?.length == 0">
+                                            <b>You are not owning any room</b>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-4">
+                    <div>
+                        <div class="card">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Create Room</a></li>
+                                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Search Room</a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="home">
+
+                                    <form class="form-horizontal company" role="form" id="comp">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control" id="name" name="name" placeholder="Room Name">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control" id="street" name="street" placeholder="Passcode">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <input type="submit" class="btn btn-success" id="street" name="street" value="Create And Join">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="profile">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+   
+            </div>
+
+            
         </div>
     </div>
 </div>

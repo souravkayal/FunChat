@@ -18,6 +18,10 @@ namespace ChatApp.Core
             return _rooms[RoomName].Users;
         }
 
+        public List<Room> GetAllRooms()
+        {
+            return _rooms.Values.ToList();
+        }
 
     }
 }
