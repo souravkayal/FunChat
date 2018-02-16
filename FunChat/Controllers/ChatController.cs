@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Core.Model;
 using ChatApp.Core;
+using Microsoft.AspNetCore.Cors;
 
 namespace ChatApp.Controllers
 {
     [Produces("application/json")]
     [Route("api/Chat")]
+    [EnableCors("AllowAll")]
     public class ChatController : Controller
     {
         ChatService ChatService;
@@ -19,7 +21,7 @@ namespace ChatApp.Controllers
             this.ChatService = new ChatService();
         }
 
-        [Route("checkRoomExist")]
+        [Route("checkRoomExist/{RoomName}")]
         public Boolean CheckRoomExist(string RoomName)
         {
             return ChatService.CheckRoomExist(RoomName);

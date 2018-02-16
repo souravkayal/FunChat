@@ -175,19 +175,36 @@ namespace ChatApp.Core
 
         public async Task DeleteRoom(string Room, string UserName)
         {
-            if(_rooms.ContainsKey(Room))
+            //Room is present or not !
+            if (_rooms.ContainsKey(Room))
             {
-                Room deletedRoom = null;
-                _rooms.TryRemove(Room, out deletedRoom);
+                var room = _rooms[Room];
+                //Make sure claimed user is creator of the Room
+                if(room.Creator.Name == UserName)
+                {
+                    Room deletedRoom = null;
+                    _rooms.TryRemove(Room, out deletedRoom);
 
-                //Once room is deleted send notification to all member of the room.
-                await Clients.Group(Room).InvokeAsync("notifyUser",
-                    new EventNotifier
-                    {
-                        CurrentUser = new User { Name = UserName, ConnectionId = Context.ConnectionId },
-                        Message = UserName + " : has deleted " + Room + "room",
-                        ActionType = "RoomDeleted",
-                    });
+                    //Once room is deleted send notification to all member of the room.
+                    await Clients.Group(Room).InvokeAsync("notifyUser",
+                        new EventNotifier
+                        {
+                            CurrentUser = new User { Name = UserName, ConnectionId = Context.ConnectionId },
+                            Message = UserName + " : has deleted " + Room + "room",
+                            ActionType = "RoomDeleted",
+                        });
+                }
+                else
+                {
+                    await Clients.Client(Context.ConnectionId).InvokeAsync("notifyUser",
+                      new EventNotifier
+                      {
+                          Message = "You are not allowed to delete the " + Room,
+                          ActionType = "RoomDeleteNotAllowed"
+                      });
+
+                }
+
             }
         }
 

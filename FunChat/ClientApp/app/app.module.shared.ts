@@ -15,6 +15,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 export class CustomOptions extends ToastOptions {
     animate = 'flyRight';
@@ -49,6 +51,7 @@ export class CustomOptions extends ToastOptions {
         BrowserModule,
         BrowserAnimationsModule,
         ToastModule.forRoot(),
+        ReactiveFormsModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },

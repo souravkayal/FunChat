@@ -9,11 +9,13 @@ import { User } from '../model/chat.model'
 @Injectable()
 export class chatService {  
 
-   public CHAT_API_ENDPOINT: string = 'http://localhost:28855/api/chat';
+    //public CHAT_API_ENDPOINT: string = 'http://localhost:28855/api/chat';
+    public CHAT_API_ENDPOINT: string = 'https://azurefunchat.azurewebsites.net/api/chat';
+
    constructor(private _http: Http) { }
 
-   checkGroupExist(roomName : any): Observable<boolean> {
-       return this._http.get(this.CHAT_API_ENDPOINT + "/checkRoomExist/")
+   checkGroupExist(roomName : string): Observable<boolean> {
+       return this._http.get(this.CHAT_API_ENDPOINT + "/checkRoomExist/" + roomName)
            .map((response: Response) => <boolean>response.json());
    } 
 

@@ -7,7 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CoolLocalStorage } from 'angular2-cool-storage';
 import { Renderer } from '@angular/core';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
-
+import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
     selector: 'home',
@@ -40,7 +40,11 @@ export class HomeComponent implements OnInit  {
     roomOwnByUser: string[];
 
 
-    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer, private toastr: ToastsManager)
+    public createRoomForm = this.fb.group({
+        RoomName: ['']
+    });
+
+    constructor(private chatService: chatService, localStorage: CoolLocalStorage, private render: Renderer, private toastr: ToastsManager, public fb: FormBuilder)
     {
         this.localStorage = localStorage; 
         this.chatProfile = this.localStorage.getObject("UserProfile");
@@ -62,24 +66,18 @@ export class HomeComponent implements OnInit  {
     }
 
     //get all rooms where the user is already join.
+    public createNewRoom(flag : string): void {
 
-
-
-    public createNewRoom(createRoom: any): void {
-        var Newroom : string[] = [createRoom.value ];
-        //--TODO : Check whether group exist.
-        this.chatService.checkGroupExist(createRoom.value).subscribe(result => {
+        //Check whether group exist.
+        this.chatService.checkGroupExist(this.createRoomForm.value.RoomName).subscribe(result => {
             if (result == false) {
-                //connectMe function will create new Group and add user there.
-
-                //this.hubConnection.invoke("ConnectMe", new ConnectRequest(Newroom, this.connectionId, this.chatProfile.UserName));
-                //this.chatProfile.Rooms.push(new Room(createRoom.value, [], 0));
-
-                this.selectedItem = createRoom.value;
-                this.currentRoom = createRoom.value;
-
+                if (flag == 'Create') {
+                }
+                if (flag == 'CreateAndJoin') {
+                    this.hubConnection.invoke("ConnectMe", new ConnectRequest(this.createRoomForm.value.RoomName, this.connectionId, this.chatProfile.UserName, ""));
+                }
             } else
-                alert("The Group Name already exist");
+                this.toastr.warning("The Group Name already exist", 'Message');
         })
         
     }
@@ -150,8 +148,19 @@ export class HomeComponent implements OnInit  {
                 this.usersInRoom = data.Users;
                 this.connectionId = data.CurrentUser.ConnectionId;
 
-                this.toastr.success(data.Message, 'Message');
+                //If room name is there then user came from welcome page
+                if (Object.keys(this.chatProfile.Rooms.filter(x => x.RoomName == data.RoomName)).length > 0)
+                {
+                    this.chatProfile.Rooms.filter(f => f.RoomName == data.RoomName)[0].PassCode = data.PassCode;
+                }
+                //room not there so, user created room in chat home
+                else {
+                    this.chatProfile.Rooms.push(new Room(data.RoomName, [], 0, data.PassCode));
+                    this.getAllCreatedRoom(data.CurrentUser.Name);
+                }
+                this.toastr.warning(data.Message, 'Message');
             }
+
             if (data.ActionType == "Disconnect" || data.ActionType == "RoomDeleted") {
                 //remove current room/group from chat profile
                 this.chatProfile.Rooms.splice(this.chatProfile.Rooms.findIndex(f => f.RoomName == this.currentRoom), 1);
@@ -165,6 +174,10 @@ export class HomeComponent implements OnInit  {
                 
                 if (this.chatProfile.UserName == data.CurrentUser.Name)
                     this.getAllCreatedRoom(this.chatProfile.UserName);
+            }
+
+            if (data.ActionType == "RoomDeleteNotAllowed") {
+                this.toastr.warning(data.Message, 'Message');
             }
         });
 

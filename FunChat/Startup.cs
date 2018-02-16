@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ChatApp.Core;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace ChatApp
 {
@@ -39,6 +41,11 @@ namespace ChatApp
                {
                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                });
+
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                                                                         .AllowAnyMethod()
+                                                                          .AllowAnyHeader()));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,10 +72,7 @@ namespace ChatApp
             {
                 routes.MapHub<ChatHub>("chat");
             });
-
-
-
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -79,6 +83,8 @@ namespace ChatApp
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "SpaFallback" });
             });
+
+            app.UseCors("AllowAll");
         }
     }
 }

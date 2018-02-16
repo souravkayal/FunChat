@@ -182,22 +182,32 @@
                 </div>
             </div> <!--message_section-->
 
-
             <div class="row">
-
                 <div class="col-sm-4">
                     <div>
                         <div class="card">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation" class="active"><a href="#Rooms" aria-controls="Rooms" role="tab" data-toggle="tab">Join Rooms</a></li>
-                                <li role="presentation"><a href="#myRooms" aria-controls="myRooms" role="tab" data-toggle="tab">My Rooms</a></li>
+                                <li role="presentation" class="active"><a href="#joinRooms" aria-controls="joinRooms" role="tab" data-toggle="tab" title="The rooms where you already join.">Join Rooms</a></li>
+                                <li role="presentation"> <a href="#myRooms" aria-controls="myRooms" role="tab" data-toggle="tab" title="The rooms which is created by you.">Manage Rooms</a></li>
                             </ul>
                             <!-- Tab panes -->
                             <div class="tab-content">
-                                <div role="tabpanel" class="tab-pane" id="Rooms">
-                                    {{chatProfile}}                                    
+                                <div role="tabpanel" class="tab-pane active" id="joinRooms" style="padding-top:0px;">
+                                    <div class="room_list">
+                                        <ul class="list-unstyled">
+                                            <li class="left clearfix" *ngFor="let item of chatProfile.Rooms">
+                                                <div class="chat-body clearfix">
+                                                    <div class="header_sec room_item">
+                                                        <strong class="primary-font" style="vertical-align:sub" title="Room Name : {{item.RoomName}}, Pass Code : {{item.PassCode}} ">{{item.RoomName}} - [ {{ item.PassCode }} ] </strong>
+                                                        <!--<input type="button" class="btn btn-xs btn-danger pull-right" value="Delete"  />-->
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div role="tabpanel" class="tab-pane active" id="myRooms" style="padding:0px;">
+
+                                <div role="tabpanel" class="tab-pane" id="myRooms" style="padding:0px;">
 
                                     <div class="room_list">
                                         <ul class="list-unstyled">
@@ -239,24 +249,20 @@
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane active" id="home">
 
-                                    <form class="form-horizontal company" role="form" id="comp">
+                                    <form class="form-horizontal company" role="form" id="comp" [formGroup]="createRoomForm">
                                         <div class="form-group">
                                             <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="name" name="name" placeholder="Room Name">
+                                                <input type="text" class="form-control" id="RoomName" formControlName="RoomName" placeholder="Room Name">
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="street" name="street" placeholder="Passcode">
-                                            </div>
-                                        </div>
-
                                         <div class="form-group">
                                             <div class="col-sm-10">
-                                                <input type="submit" class="btn btn-success" id="street" name="street" value="Create And Join">
+                                                <!--<input type="submit" class="btn btn-warning" id="Create" name="CreateRoom" value="Create" (click)="createNewRoom('Create')">-->
+                                                <input type="submit" class="btn btn-success" id="CreateRoom" name="CreateRoom" value="Create And Join" (click)="createNewRoom('CreateAndJoin')" >
                                             </div>
                                         </div>
                                     </form>
+
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="profile">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
                             </div>
